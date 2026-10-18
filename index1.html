@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Um convite especial 💌</title>
+  <style>
+    :root {
+      --bg: #fff0f4;
+      --card: #fff;
+      --text: #4a1f2e;
+      --accent: #e8486f;
+      --accent2: #ffd1dc;
+      --muted: #9a6b7a;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px)
+    }
+
+    @media (prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #2a1219;
+        --card: #3a1b25;
+        --text: #ffe6ec;
+        --accent: #ff6b8f;
+        --accent2: #5a2a38;
+        --muted: #d49aab
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #2a1219;
+      --card: #3a1b25;
+      --text: #ffe6ec;
+      --accent: #ff6b8f;
+      --accent2: #5a2a38;
+      --muted: #d49aab
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 32px 24px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(232, 72, 111, .18)
+    }
+
+    .screen {
+      display: none
+    }
+
+    .screen.on {
+      display: block;
+      animation: pop .4s ease
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      margin: .3em 0
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    .emoji {
+      font-size: 3.2rem
+    }
+
+    button,
+    .btn {
+      font: inherit;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block
+    }
+
+    .yes {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600
+    }
+
+    .no {
+      background: var(--accent2);
+      color: var(--text)
+    }
+
+    #noBtn.run {
+      position: fixed;
+      z-index: 10;
+      transition: left .25s, top .25s
+    }
+
+    .row {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 24px;
+      min-height: 56px
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px
+    }
+
+    .opt {
+      background: var(--accent2);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 18px 8px;
+      font-size: 1.05rem
+    }
+
+    .opt.sel {
+      background: var(--accent);
+      color: #fff;
+      transform: scale(1.04)
+    }
+
+    input {
+      font: inherit;
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid var(--accent2);
+      background: var(--bg);
+      color: var(--text);
+      margin-top: 12px
+    }
+
+    .msg {
+      white-space: pre-line
+    }
+
+    .card {
+      position: relative;
+      z-index: 1
+    }
+
+    .heart {
+      position: fixed;
+      bottom: -40px;
+      z-index: 0;
+      pointer-events: none;
+      animation: rise linear forwards
+    }
+
+    @keyframes rise {
+      0% {
+        opacity: 0;
+        transform: translateY(0)
+      }
+
+      10% {
+        opacity: .8
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-115vh) translateX(var(--dx))
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+
+    <section class="screen on" id="s1">
+      <div class="emoji">🐻💌</div>
+      <h1>Queres sair comigo?</h1>
+      <p>Tenho um convite muito especial para te fazer…</p>
+      <div class="row">
+        <button class="yes" id="yesBtn">Sim 💖</button>
+        <button class="no" id="noBtn">Não</button>
+      </div>
+    </section>
+
+    <section class="screen" id="s2">
+      <div class="emoji">🐰🍽️</div>
+      <h1>Boa escolha!</h1>
+      <p>Então diz-me, o que te apetece comer?</p>
+      <div class="grid" id="foods"></div>
+    </section>
+
+    <section class="screen" id="s3">
+      <div class="emoji">🐱📅</div>
+      <h1>E quando?</h1>
+      <p>Escolhe o dia e a hora que te der mais jeito.</p>
+      <input type="date" id="date" aria-label="Data">
+      <input type="time" id="time" aria-label="Hora">
+      <div class="row"><button class="yes" id="go">Confirmar ✨</button></div>
+    </section>
+
+    <section class="screen" id="s4">
+      <div class="emoji">🧸🥰</div>
+      <h1>Obrigado!</h1>
+      <p class="msg" id="final"></p>
+      <div class="row"><a class="btn yes" id="wa" target="_blank" rel="noopener">Enviar a minha resposta 💬</a></div>
+    </section>
+
+  </div>
+
+  <script>
+    // ✏️ EDITA AQUI: o teu número com indicativo, sem + nem espaços (ex.: 351912345678)
+    const PHONE = "351912470089";
+    const FOODS = ["🍣 Sushi", "🍕 Pizza", "🍔 Hambúrguer", "🥩 Churrasco", "🍧 Açaí", "🍝 Massa"];
+    let food = "";
+    const $ = id => document.getElementById(id);
+    const show = n => {document.querySelectorAll(".screen").forEach(s => s.classList.remove("on")); $("s" + n).classList.add("on");};
+
+    // Botão "Não" que foge
+    const no = $("noBtn");
+    function flee(e) {
+      if (e) e.preventDefault();
+      const w = no.offsetWidth, h = no.offsetHeight, m = 12;
+      const x = m + Math.random() * (window.innerWidth - w - 2 * m);
+      const y = m + Math.random() * (window.innerHeight - h - 2 * m);
+      no.classList.add("run");
+      no.style.left = x + "px"; no.style.top = y + "px";
+    }
+    ["mouseenter", "touchstart", "pointerdown", "click", "focus"].forEach(ev => no.addEventListener(ev, flee, {passive: false}));
+
+    // Corações a subir
+    function heart() {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = ["💗", "💕", "💖", "❤️"][Math.floor(Math.random() * 4)];
+      const dur = 5 + Math.random() * 4;
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.fontSize = (12 + Math.random() * 16) + "px";
+      h.style.animationDuration = dur + "s";
+      h.style.setProperty("--dx", (Math.random() * 80 - 40) + "px");
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), dur * 1000);
+    }
+    setInterval(heart, 500);
+
+    $("yesBtn").onclick = () => show(2);
+
+    FOODS.forEach(f => {
+      const b = document.createElement("button");
+      b.className = "opt"; b.textContent = f;
+      b.onclick = () => {food = f; b.classList.add("sel"); setTimeout(() => show(3), 350);};
+      $("foods").appendChild(b);
+    });
+
+    $("date").min = new Date().toISOString().split("T")[0];
+
+    $("go").onclick = () => {
+      const d = $("date").value, t = $("time").value;
+      if (!d || !t) {alert("Falta escolher o dia e a hora 😊"); return;}
+      const [y, m, day] = d.split("-");
+      const dataPT = `${day}/${m}/${y}`;
+      $("final").textContent =
+        `Eu sabia que ias dizer que sim! 💕\nJá estou ansioso por ${dataPT} às ${t}.\n${food}… vai ser perfeito. Mal posso esperar!`;
+      const text = `Aceitei o teu convite! 💖 ${food}, dia ${dataPT} às ${t}. Até lá! 🥰`;
+      $("wa").href = `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`;
+      show(4);
+    };
+  </script>
+</body>
+
+</html>
